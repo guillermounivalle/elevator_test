@@ -1,7 +1,7 @@
 
 //Objeto elevador: Almacena la información necesaria para el funcionamiento del elevador
 var elevador = {
-	arrayPisos: [5,29,13,10],
+	arrayPisos: [],
 	pisoInicial: 4,
 	sentido: 1,
 	mapaPisos:{5:2, 29:10, 13:1, 10:1},
@@ -10,25 +10,125 @@ var elevador = {
    arrayPisosBajada: []
 }
 
+//Iterador de cada acción del elevador
+var iterador = 1;
 
 
 
 //Metodo que va a iniciar el recorrido del elevador
+/**
+ * Por medio de un aserie de validaciones dentro de un metodo Do-While
+ * se va implementado cada uno de los metodos necesarios para la función 
+ * óptima del elevador
+ */
 iniciarElevador = () => {
-      
+   elevador.pisoActual = elevador.pisoInicial;
+   inicializacionPisos();
+   mostrarAccionElevador(iterador, elevador.pisoActual, 5);
+   do {
+      var tamanoArrayPisos = elevador.arrayPisos.length;
+      var pisoParadaSubiendo = elevador.arrayPisosSubida[0];
+      var pisoParadaBajando = elevador.arrayPisosBajada[0];
+      var pisoActual = elevador.pisoActual;
+      var sentido = elevador.sentido;
+      iterador+= 1;
+      if(sentido == 1){
+         if(pisoActual == pisoParadaSubiendo ){
+            mostrarAccionElevador(iterador, pisoActual, 5);
+            iterador+= 1
+            mostrarAccionElevador(iterador, 0, 1);
+            gestionandoPisos(pisoActual);
+            elevador.pisoActual += 1;
+            mostrarAccionElevador(iterador, 0, 2);
+            elevador.arrayPisosSubida.splice(0, 1);
+            cambiarDIreccionElevador();
+         }
+         if(pisoActual !== pisoParadaSubiendo) {
+            mostrarAccionElevador(iterador, pisoActual + 1, 5);
+            elevador.pisoActual += 1;
+            cambiarDIreccionElevador();
+         }
+         
+      }else{      
+         if(pisoActual == pisoParadaBajando ){
+            mostrarAccionElevador(iterador, pisoActual, 5);
+            iterador+= 1
+            mostrarAccionElevador(iterador, 0, 1);
+            gestionandoPisos(pisoActual);
+            elevador.pisoActual -= 1;
+            mostrarAccionElevador(iterador, 0, 3);
+            elevador.arrayPisosBajada.splice(0, 1);
+            cambiarDIreccionElevador();
+         }
+         if(pisoActual !== pisoParadaBajando) {
+            mostrarAccionElevador(iterador, pisoActual + 1, 5);
+            elevador.pisoActual -= 1;
+            cambiarDIreccionElevador();
+         }
+      } 
+    } while (tamanoArrayPisos > 0);
 }
+
+
+/**
+ * Metodos que al ser llamado cambia el valor de la dirección del elevador
+ */
+cambiarDIreccionElevador = () => {
+   if(elevador.arrayPisosSubida == 0 || elevador.pisoActual >= 29){
+      elevador.direccion = -1;
+   }else if (elevador.arrayPisosBajada == 0 || elevador.pisoActual <= 0){
+      elevador.direccion = 1;
+   }else{
+      return;
+   }
+}
+
+/**
+ * Método encargado de organizar los pisos de entrada inicales con el fin de optimizar el
+ * recorrido del elevador
+ */
+inicializacionPisos = async () => {
+   var pisosInicio = elevador.arrayPisos;
+   var tamanoArrayPisosInicio = pisosInicio.length;
+   var pisoActual = elevador.pisoActual;
+   for(var i = 0; i < tamanoArrayPisosInicio; i++){
+      if(pisoActual > pisosInicio[i]){
+         organizarArrayPisosBajada(pisosInicio[i]);
+      }else if(pisoActual < pisosInicio[i]){
+         organizarArrayPisosSubida(pisosInicio[i]);
+      }else{
+         i = i;
+      }
+   }
+}
+
+
 
 //Metodo que recibe como argumento el número de piso y lo agrega al arreglo de pisos
 insertarNuevoPiso = (piso) => {
    elevador.arrayPisos.push(piso); 
+   iterador += 1;
+   mostrarAccionElevador(iterador, piso, 4);
 }
 
-
+/**
+ * Método que recibe como argumento el número del piso donde se detiene el ascensor,
+ * Verifica en el mapa de piso ingresados, toma le valor de la clave y lo inserta en el 
+ * array de pisos que debe visitar el elevador, a su vez elimina del mapa de pisos
+ * y el array de pisos el piso donde ya se detuvo el elevador
+ */
 gestionandoPisos = (pisoDetenido) => {
    var pisoNuevo = elevador.mapaPisos[pisoDetenido];
-   insertarNuevoPiso(pisoNuevo);
-   delete elevador.mapaPisos[pisoDetenido];
-   delete elevador.arrayPisos[0];
+   if(pisoNuevo !== undefined){
+      insertarNuevoPiso(pisoNuevo);
+      recorridoPisosPorDireccion(pisoDetenido);
+      delete elevador.mapaPisos[pisoDetenido];
+      var index = elevador.arrayPisos.indexOf(pisoDetenido)
+      elevador.arrayPisos.splice(index,1);
+   }else{
+      var index = elevador.arrayPisos.indexOf(pisoDetenido)
+      elevador.arrayPisos.splice(index,1);
+   }   
 }
 
 
@@ -58,8 +158,7 @@ organizarArrayPisosSubida = (piso) => {
  * Metodo que al ser llamado organiza de acuerdo a la dirección en la que se esté moviendo el levador
  * los arreglos necesarios para que el recorrido se optimice
  */
-recorridoPisosPorDireccion = () => {
-   var pisoActual = elevador.pisoActual;
+recorridoPisosPorDireccion = (pisoActual) => {
    var pisos = elevador.arrayPisos;
    var direccion = elevador.direccion;
    var pisoNuevo = pisos[pisos.length - 1];
@@ -89,9 +188,9 @@ recorridoPisosPorDireccion = () => {
  * elevador 
  */
 setArrayPisos = (pisos) => {
-	elevador.arrayPisos = pisos.split(",");
-	for(var i = 0; i < elevador.arrayPisos.length; i++){
-		console.log("=============> piso " + elevador.arrayPisos[i]);
+	var arrayPisos = pisos.split(",");
+	for(var i = 0; i < arrayPisos.length; i++){
+      elevador.arrayPisos[i] = parseInt(arrayPisos[i]);
 	}
 }
 
@@ -113,16 +212,16 @@ mostrarAccionElevador = (i, piso, validador) => {
          console.log(i + ". Elevador se detiene");
          break;
       case 2:
-         console.log(i + ". Elevador subiendo");
+         console.log(i + ". Elevador subiendo " );
          break;
       case 3:
-         console.log(i + ". Elevador bajando");
+         console.log(i + ". Elevador bajando " );
          break;
       case 4:
          console.log(i + ". Piso ingresado " + piso);
          break;
       case 5:
-         console.log(i + ". Elevador en el piso " + piso);
+         console.log(i + ". Elevador en piso " + piso);
          break;
       default:
          break;

@@ -5,7 +5,6 @@ const readline = require ('readline');
 
 
 inicio = () => {
-	console.log("sajcsasaifiqw")
 	let interfazCaptura = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout
