@@ -4,7 +4,7 @@ var elevador = {
 	arrayPisos: [],
 	pisoInicial: 4,
 	sentido: 1,
-	mapaPisos:{5:2, 29:10, 13:1, 10:1},
+	mapaPisos:{5:2, 29:10, 13:4, 10:1},
    pisoActual: 0,
    arrayPisosSubida: [],
    arrayPisosBajada: []
@@ -27,6 +27,7 @@ iniciarElevador = () => {
    mostrarAccionElevador(iterador, elevador.pisoActual, 5);
    do {
       var tamanoArrayPisos = elevador.arrayPisos.length;
+      //console.log("Tamaño arrayPisos ====> " +tamanoArrayPisos);
       var pisoParadaSubiendo = elevador.arrayPisosSubida[0];
       var pisoParadaBajando = elevador.arrayPisosBajada[0];
       var pisoActual = elevador.pisoActual;
@@ -34,7 +35,7 @@ iniciarElevador = () => {
       iterador+= 1;
       if(sentido == 1){
          if(pisoActual == pisoParadaSubiendo ){
-            mostrarAccionElevador(iterador, pisoActual, 5);
+            //console.log("Entra al if 1");
             iterador+= 1
             mostrarAccionElevador(iterador, 0, 1);
             gestionandoPisos(pisoActual);
@@ -44,25 +45,27 @@ iniciarElevador = () => {
             cambiarDIreccionElevador();
          }
          if(pisoActual !== pisoParadaSubiendo) {
+            //console.log("Entra al if 2");
             mostrarAccionElevador(iterador, pisoActual + 1, 5);
             elevador.pisoActual += 1;
             cambiarDIreccionElevador();
          }
          
-      }else{      
+      }if(sentido == -1){      
          if(pisoActual == pisoParadaBajando ){
-            mostrarAccionElevador(iterador, pisoActual, 5);
+            //console.log("Entra al if 3");
             iterador+= 1
             mostrarAccionElevador(iterador, 0, 1);
             gestionandoPisos(pisoActual);
-            elevador.pisoActual -= 1;
+            elevador.pisoActual = elevador.pisoActual - 1;
             mostrarAccionElevador(iterador, 0, 3);
             elevador.arrayPisosBajada.splice(0, 1);
             cambiarDIreccionElevador();
          }
          if(pisoActual !== pisoParadaBajando) {
+            //console.log("Entra al if ");
             mostrarAccionElevador(iterador, pisoActual + 1, 5);
-            elevador.pisoActual -= 1;
+            elevador.pisoActual = elevador.pisoActual - 1;
             cambiarDIreccionElevador();
          }
       } 
@@ -74,10 +77,14 @@ iniciarElevador = () => {
  * Metodos que al ser llamado cambia el valor de la dirección del elevador
  */
 cambiarDIreccionElevador = () => {
-   if(elevador.arrayPisosSubida == 0 || elevador.pisoActual >= 29){
-      elevador.direccion = -1;
-   }else if (elevador.arrayPisosBajada == 0 || elevador.pisoActual <= 0){
-      elevador.direccion = 1;
+   //console.log("array subida tamaño  ============================> " + elevador.arrayPisosSubida.length);
+   //console.log("array bajada tamaño  ============================> " + elevador.arrayPisosBajada.length);
+   if(elevador.arrayPisosSubida.length == 0 || elevador.pisoActual > 29){
+      //console.log("cambio de subida a bajada");
+      elevador.sentido = -1;
+   }else if (elevador.arrayPisosBajada.length == 0 || elevador.pisoActual <= 1){
+      //console.log("cambio a bajada subida");
+      elevador.sentido = 1;
    }else{
       return;
    }
@@ -123,7 +130,7 @@ gestionandoPisos = (pisoDetenido) => {
       insertarNuevoPiso(pisoNuevo);
       recorridoPisosPorDireccion(pisoDetenido);
       delete elevador.mapaPisos[pisoDetenido];
-      var index = elevador.arrayPisos.indexOf(pisoDetenido)
+      var index = elevador.arrayPisos.indexOf(pisoDetenido);
       elevador.arrayPisos.splice(index,1);
    }else{
       var index = elevador.arrayPisos.indexOf(pisoDetenido)
@@ -140,6 +147,9 @@ en las paradas de bajada del elevador
 organizarArrayPisosBajada = (piso) => {
    elevador.arrayPisosBajada.push(piso);
    elevador.arrayPisosBajada.sort((a, b) => b - a );
+   for(var i = 0; i < elevador.arrayPisosBajada.length; i++){
+      //console.log("bajada ===> "+ elevador.arrayPisosBajada);
+   }
 }
 
 
@@ -151,6 +161,9 @@ en las paradas de bajada del elevador
 organizarArrayPisosSubida = (piso) => {
    elevador.arrayPisosSubida.push(piso);
    elevador.arrayPisosSubida.sort((a, b) => a - b );
+   for(var i = 0; i < elevador.arrayPisosSubida.length; i++){
+     // console.log("subida ===> "+ elevador.arrayPisosSubida);
+   }
 }
 
 
@@ -160,18 +173,19 @@ organizarArrayPisosSubida = (piso) => {
  */
 recorridoPisosPorDireccion = (pisoActual) => {
    var pisos = elevador.arrayPisos;
-   var direccion = elevador.direccion;
+   var sentido = elevador.sentido;
    var pisoNuevo = pisos[pisos.length - 1];
-   switch (direccion) {
+   //console.log("Piso nuevo ======> " + pisoNuevo);
+   switch (sentido) {
       case 1:
-         if(pisoActual < pisoNuevo){
+         if(pisoActual > pisoNuevo){
             organizarArrayPisosBajada(pisoNuevo);
          }else{
             organizarArrayPisosSubida(pisoNuevo);
          }
          break;
       case -1:
-         if(pisoActual > pisoNuevo){
+         if(pisoActual < pisoNuevo){
             organizarArrayPisosSubida(pisoNuevo);
          }else{
             organizarArrayPisosBajada(pisoNuevo);
