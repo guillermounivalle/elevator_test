@@ -32,21 +32,22 @@ iniciarElevador = () => {
       var pisoParadaBajando = elevador.arrayPisosBajada[0];
       var pisoActual = elevador.pisoActual;
       var sentido = elevador.sentido;
-      iterador+= 1;
       if(sentido == 1){
          if(pisoActual == pisoParadaSubiendo ){
             //console.log("Entra al if 1");
             iterador+= 1
-            mostrarAccionElevador(iterador, 0, 1);
-            gestionandoPisos(pisoActual);
-            elevador.pisoActual += 1;
             mostrarAccionElevador(iterador, 0, 2);
+            gestionandoPisos(pisoActual);
+            //elevador.pisoActual += 1;
+            iterador+=1
+            mostrarAccionElevador(iterador, 0, sentido);//
             elevador.arrayPisosSubida.splice(0, 1);
             cambiarDIreccionElevador();
          }
          if(pisoActual !== pisoParadaSubiendo) {
             //console.log("Entra al if 2");
-            mostrarAccionElevador(iterador, pisoActual + 1, 5);
+            iterador+=1;
+            mostrarAccionElevador(iterador, pisoActual+1, 5);
             elevador.pisoActual += 1;
             cambiarDIreccionElevador();
          }
@@ -55,16 +56,18 @@ iniciarElevador = () => {
          if(pisoActual == pisoParadaBajando ){
             //console.log("Entra al if 3");
             iterador+= 1
-            mostrarAccionElevador(iterador, 0, 1);
+            mostrarAccionElevador(iterador, 0, 2);
             gestionandoPisos(pisoActual);
-            elevador.pisoActual = elevador.pisoActual - 1;
-            mostrarAccionElevador(iterador, 0, 3);
+            //elevador.pisoActual = elevador.pisoActual - 1;
+            iterador += 1
+            mostrarAccionElevador(iterador, 0, sentido);
             elevador.arrayPisosBajada.splice(0, 1);
             cambiarDIreccionElevador();
          }
          if(pisoActual !== pisoParadaBajando) {
             //console.log("Entra al if ");
-            mostrarAccionElevador(iterador, pisoActual + 1, 5);
+            iterador+=1;
+            mostrarAccionElevador(iterador, pisoActual, 5);
             elevador.pisoActual = elevador.pisoActual - 1;
             cambiarDIreccionElevador();
          }
@@ -222,13 +225,13 @@ setArrayPisos = (pisos) => {
 
 mostrarAccionElevador = (i, piso, validador) => {
    switch (validador) {
-      case 1:
+      case 2:
          console.log(i + ". Elevador se detiene");
          break;
-      case 2:
+      case 1:
          console.log(i + ". Elevador subiendo " );
          break;
-      case 3:
+      case -1:
          console.log(i + ". Elevador bajando " );
          break;
       case 4:
