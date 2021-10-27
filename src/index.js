@@ -5,35 +5,8 @@ const readline = require ('readline');
 
 
 inicio = () => {
-	let interfazCaptura = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout
-	});
-	
-	interfazCaptura.question('Ingrese los pisos que necesita (separados por comas) ', function(respuesta){
-		setArrayPisos(respuesta);
-		iniciarElevador();
-		//console.log(`Los pisosseleccionados son ${respuesta}`);
-		//pregunta2();
-		interfazCaptura.close();
-	});
-	
+		iniciarElevador();	
 }
-
 
 inicio();
 
-
-
-/**
- * pregunta2 = () => {
-	interfazCaptura.question('Ingrese el piso inicial del ascensor ', function(piso){
-		pisoInicial=piso;
-		console.log("Piso inicial ========> "+ pisoInicial);
-	
-		interfazCaptura.close();
-
-});
-}
- */
- 

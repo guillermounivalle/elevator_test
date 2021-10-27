@@ -1,7 +1,7 @@
 
 //Objeto elevador: Almacena la información necesaria para el funcionamiento del elevador
 var elevador = {
-	arrayPisos: [],
+	arrayPisos: [5,29,13,10],
 	pisoInicial: 4,
 	sentido: 1,
 	mapaPisos:{5:2, 29:10, 13:4, 10:1},
@@ -22,30 +22,27 @@ var iterador = 1;
  * óptima del elevador
  */
 iniciarElevador = () => {
+   imprimirParametrosInicio();
    elevador.pisoActual = elevador.pisoInicial;
    inicializacionPisos();
    mostrarAccionElevador(iterador, elevador.pisoActual, 5);
    do {
       var tamanoArrayPisos = elevador.arrayPisos.length;
-      //console.log("Tamaño arrayPisos ====> " +tamanoArrayPisos);
       var pisoParadaSubiendo = elevador.arrayPisosSubida[0];
       var pisoParadaBajando = elevador.arrayPisosBajada[0];
       var pisoActual = elevador.pisoActual;
       var sentido = elevador.sentido;
       if(sentido == 1){
          if(pisoActual == pisoParadaSubiendo ){
-            //console.log("Entra al if 1");
             iterador+= 1
             mostrarAccionElevador(iterador, 0, 2);
             gestionandoPisos(pisoActual);
-            //elevador.pisoActual += 1;
             iterador+=1
             mostrarAccionElevador(iterador, 0, sentido);//
             elevador.arrayPisosSubida.splice(0, 1);
             cambiarDIreccionElevador();
          }
          if(pisoActual !== pisoParadaSubiendo) {
-            //console.log("Entra al if 2");
             iterador+=1;
             mostrarAccionElevador(iterador, pisoActual+1, 5);
             elevador.pisoActual += 1;
@@ -54,18 +51,15 @@ iniciarElevador = () => {
          
       }if(sentido == -1){      
          if(pisoActual == pisoParadaBajando ){
-            //console.log("Entra al if 3");
             iterador+= 1
             mostrarAccionElevador(iterador, 0, 2);
             gestionandoPisos(pisoActual);
-            //elevador.pisoActual = elevador.pisoActual - 1;
             iterador += 1
             mostrarAccionElevador(iterador, 0, sentido);
             elevador.arrayPisosBajada.splice(0, 1);
             cambiarDIreccionElevador();
          }
          if(pisoActual !== pisoParadaBajando) {
-            //console.log("Entra al if ");
             iterador+=1;
             mostrarAccionElevador(iterador, pisoActual, 5);
             elevador.pisoActual = elevador.pisoActual - 1;
@@ -80,13 +74,9 @@ iniciarElevador = () => {
  * Metodos que al ser llamado cambia el valor de la dirección del elevador
  */
 cambiarDIreccionElevador = () => {
-   //console.log("array subida tamaño  ============================> " + elevador.arrayPisosSubida.length);
-   //console.log("array bajada tamaño  ============================> " + elevador.arrayPisosBajada.length);
    if(elevador.arrayPisosSubida.length == 0 || elevador.pisoActual > 29){
-      //console.log("cambio de subida a bajada");
       elevador.sentido = -1;
    }else if (elevador.arrayPisosBajada.length == 0 || elevador.pisoActual <= 1){
-      //console.log("cambio a bajada subida");
       elevador.sentido = 1;
    }else{
       return;
@@ -150,9 +140,6 @@ en las paradas de bajada del elevador
 organizarArrayPisosBajada = (piso) => {
    elevador.arrayPisosBajada.push(piso);
    elevador.arrayPisosBajada.sort((a, b) => b - a );
-   for(var i = 0; i < elevador.arrayPisosBajada.length; i++){
-      //console.log("bajada ===> "+ elevador.arrayPisosBajada);
-   }
 }
 
 
@@ -164,9 +151,6 @@ en las paradas de bajada del elevador
 organizarArrayPisosSubida = (piso) => {
    elevador.arrayPisosSubida.push(piso);
    elevador.arrayPisosSubida.sort((a, b) => a - b );
-   for(var i = 0; i < elevador.arrayPisosSubida.length; i++){
-     // console.log("subida ===> "+ elevador.arrayPisosSubida);
-   }
 }
 
 
@@ -178,7 +162,6 @@ recorridoPisosPorDireccion = (pisoActual) => {
    var pisos = elevador.arrayPisos;
    var sentido = elevador.sentido;
    var pisoNuevo = pisos[pisos.length - 1];
-   //console.log("Piso nuevo ======> " + pisoNuevo);
    switch (sentido) {
       case 1:
          if(pisoActual > pisoNuevo){
@@ -243,6 +226,25 @@ mostrarAccionElevador = (i, piso, validador) => {
       default:
          break;
    }
+}
+
+
+/**
+ * Método que al ser llamado muestra en consola los parametros iniciales del elevador
+ */
+imprimirParametrosInicio = () => {
+   var sentido = "subiendo";
+   var pisos = "";
+   if(elevador.sentido == -1){
+      sentido = "Bajando";
+   }
+   for(var i = 0; i < elevador.arrayPisos.length; i++){
+      pisos = pisos.concat(elevador.arrayPisos[i]+ ", ");
+   }
+   console.log("Arreglo de pisos: [ " + pisos +"]");
+   console.log("Piso Inicial de ejecución: "+ elevador.pisoInicial);
+   console.log("Pisos ingresados: "+ JSON.stringify(elevador.mapaPisos) );
+   console.log("sentido: " + sentido + "\n");
 }
 
 module.exports = {
